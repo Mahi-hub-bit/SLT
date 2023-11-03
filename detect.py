@@ -115,7 +115,9 @@ def run(
     vid_path, vid_writer = [None] * bs, [None] * bs
 
     # Run inference
+    detected_words=[]
     detected_sentence=" "
+    words_in_frame=[]
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
     for path, im, im0s, vid_cap, s in dataset:
@@ -166,6 +168,7 @@ def run(
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
+            
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
@@ -180,7 +183,8 @@ def run(
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
                     label = names[c] if hide_conf else f'{names[c]}'
-                    detected_sentence+=label+" "
+                    detected_sentence+=label
+                    words_in_frame.append(label)
                     confidence = float(conf)
                     confidence_str = f'{confidence:.2f}'
 
@@ -199,22 +203,27 @@ def run(
                         annotator.box_label(xyxy,label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-                   
+              
+             
             # Stream results
             im0 = annotator.result()
 
             if view_img:
-                cv2.putText(im0, detected_sentence, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                cv2.putText(im0, detected_sentence, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                cv2.putText(im0, "Detected Words: " + ''.join(words_in_frame), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
                 if platform.system() == 'Linux' and p not in windows:
                     windows.append(p)
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
                 cv2.imshow(str(p), im0)
-                key = cv2.waitKey(1500) & 0xFF
+                key = cv2.waitKey(1000) & 0xFF
                 if key == ord('c'):
                     detected_sentence = " "
-                if key == ord('q'):
+                    label = ' '
+                    words_in_frame.append(label)
+                if key == ord('x'):
                     break
+            detected_words += words_in_frame
 
             # Save results (image with detections)
             if save_img:
