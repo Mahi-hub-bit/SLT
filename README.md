@@ -26,36 +26,36 @@ Technology Stack
 
 Architecture
 
-Start
-↓
-User initiates the sign language translation application
-↓
-System initializes and displays the main interface
-↓
-User selects the "Capture Sign" option
-↓
-System activates the camera for capturing sign language gestures
-↓
-Camera captures the user's hand gestures
-↓
-Image processing algorithm processes the captured gestures
-↓
-System recognizes the sign language gesture
-↓
-Mapped gesture is converted into corresponding English text
-↓
-System displays the translated text on the screen
-↓
-User reviews the translated text
-↓
-If satisfied,
+    Start
     ↓
-    End
-Else
+    User initiates the sign language translation application
     ↓
-    User can retry capturing the sign
+    System initializes and displays the main interface
     ↓
-    Loop back to "User selects the 'Capture Sign' option"
+    User selects the "Capture Sign" option
+    ↓
+    System activates the camera for capturing sign language gestures
+    ↓
+    Camera captures the user's hand gestures
+    ↓
+    Image processing algorithm processes the captured gestures
+    ↓
+    System recognizes the sign language gesture
+    ↓
+    Mapped gesture is converted into corresponding English text
+    ↓
+    System displays the translated text on the screen
+    ↓
+    User reviews the translated text
+    ↓
+    If satisfied,
+        ↓
+        End
+    Else
+        ↓
+        User can retry capturing the sign
+        ↓
+        Loop back to "User selects the 'Capture Sign' option"
 
 Features and Functionality
 
